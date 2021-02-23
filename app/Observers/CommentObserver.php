@@ -2,10 +2,10 @@
 
 namespace App\Observers;
 
+use App\Jobs\Backend\SendNewCommentNotificationForAdminJob;
 use App\Models\Comment;
 use Illuminate\Support\Facades\Cache;
 use App\Jobs\Frontend\SendNewCommentForPostOwnerJob;
-use App\Notifications\Frontend\NewCommentForPostOwnerNotify;
 
 class CommentObserver
 {
@@ -20,6 +20,7 @@ class CommentObserver
         if($comment->status == 'Active') Cache::forget('recent_comments');
         // Handle Notifications queue job.
         dispatch(new SendNewCommentForPostOwnerJob($comment));
+        dispatch(new SendNewCommentNotificationForAdminJob($comment));
     }
 
     /**

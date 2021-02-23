@@ -2,13 +2,31 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Observers\CommentObserver;
+use Illuminate\Database\Eloquent\Model;
+use Nicolaslopezj\Searchable\SearchableTrait;
 
 class Comment extends Model
 {
-    //
+    use SearchableTrait;  // Search Box Package Trait.
+
     protected $guarded = [];
+    protected $searchable = [
+        /**
+         * Columns and their priority in search results.
+         * Columns with higher values are more important.
+         * Columns with equal values have equal importance.
+         *
+         * @var array
+         */
+        'columns' => [
+            'comments.name'       => 10,
+            'comments.email'      => 10,
+            'comments.url'        => 10,
+            'comments.ip_address' => 10,
+            'comments.comment'    => 10,
+        ]
+    ];
 
     /**
      * The Comment observer registration.

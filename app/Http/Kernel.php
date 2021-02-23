@@ -66,6 +66,7 @@ class Kernel extends HttpKernel
         /*
          * Entrust Package...
          */
+        'roles' => \App\Http\Middleware\CheckRole::class,
         'role' => \Mindscms\Entrust\Middleware\EntrustRole::class,
         'permission' => \Mindscms\Entrust\Middleware\EntrustPermission::class,
         'ability' => \Mindscms\Entrust\Middleware\EntrustAbility::class,

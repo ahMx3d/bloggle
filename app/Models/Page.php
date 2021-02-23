@@ -4,14 +4,29 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Cviebrock\EloquentSluggable\Sluggable;
+use Nicolaslopezj\Searchable\SearchableTrait;
 
 class Page extends Model
 {
-    // SEO Friendly Package Trait.
-    use Sluggable;
+    use
+        Sluggable,  // SEO Friendly Package Trait.
+        SearchableTrait;  // Search Box Package Trait.
 
     protected $table = 'posts';
     protected $guarded = [];
+    protected $searchable = [
+        /**
+         * Columns and their priority in search results.
+         * Columns with higher values are more important.
+         * Columns with equal values have equal importance.
+         *
+         * @var array
+         */
+        'columns' => [
+            'posts.title'       => 10,
+            'posts.description' => 10
+        ]
+    ];
 
     /**
      * The Sluggable Trait Method Implementation.
@@ -96,5 +111,15 @@ class Page extends Model
     public function media()
     {
         return $this->hasMany(PostMedia::class, 'post_id', 'id');
+    }
+
+    /**
+     * The Page Status For Blades.
+     *
+     * @return object
+     */
+    public function status()
+    {
+        return ($this->status)? 'Active': 'Pending';
     }
 }

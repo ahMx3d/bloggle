@@ -18,7 +18,7 @@ class AuthUserRepository implements IAuthUserRepository
             'media',
             'category',
             'user'
-        ])->withCount('comments')->orderDesc()->paginate(
+        ])->withCount('comments')->typePost()->orderDesc()->paginate(
             $pagination_count
         );
     }

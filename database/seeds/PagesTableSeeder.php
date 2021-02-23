@@ -36,7 +36,7 @@ class PagesTableSeeder extends Seeder
             'category_id'  => 1,
         ]);
         Page::create([
-            'title'        => 'Get In Touch',
+            'title'        => 'Contact Us',
             'description'  => $faker->paragraph(),
             'status'       => 1,
             'comment_able' => 0,

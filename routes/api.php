@@ -13,6 +13,16 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+Route::group(['namespace' => 'Backend\Api'],function () {
+    Route::get(
+        'charts/comments',
+        'ChartController@comments'
+    );
+    Route::get(
+        'charts/users',
+        'ChartController@users'
+    );
+});
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();

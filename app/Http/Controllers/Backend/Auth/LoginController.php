@@ -28,7 +28,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/admin/index';
+    protected $redirectTo = RouteServiceProvider::ADMIN;
 
     /**
      * Create a new controller instance.
@@ -69,8 +69,11 @@ class LoginController extends Controller
      */
     protected function authenticated(Request $request, $user)
     {
-        if($user->status == 0){
-            Auth::logout();
-        }
+        if($user->status == 0) Auth::logout();
+        if($user->status == 1) return redirect_with_msg(
+            'admin.index',
+            'Logged in Successfully',
+            'success'
+        );
     }
 }

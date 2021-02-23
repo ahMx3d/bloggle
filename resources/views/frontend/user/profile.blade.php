@@ -75,7 +75,7 @@
                             <td colspan="5">No Posts Found</td>
                             @endforelse
                         </tbody>
-                        @if ($posts->count() > 0)
+                        @if ($posts->count() > 5)
                         <tfoot>
                             <tr>
                                 <td colspan="5">{!! $posts->appends(request()->input())->links() !!}</td>

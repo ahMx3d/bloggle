@@ -27,7 +27,7 @@ class ResetPasswordController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/admin/index';
+    protected $redirectTo = RouteServiceProvider::ADMIN;
 
     /**
      * Display the password reset view for the given token.

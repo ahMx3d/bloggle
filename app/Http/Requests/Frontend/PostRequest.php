@@ -29,6 +29,7 @@ class PostRequest extends FormRequest
             'status'       => 'required',
             'comment_able' => 'required',
             'category_id'  => 'required',
+            'images.*'     => 'nullable|mimes:png,jpg,jpeg,gif|max:20000',
         ];
     }
 }

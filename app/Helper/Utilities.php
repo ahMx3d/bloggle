@@ -1,8 +1,24 @@
 <?php
 
+use App\Models\Permission;
 use Illuminate\Support\Str;
+use Spatie\Valuestore\Valuestore;
 use Illuminate\Support\Facades\File;
 use Intervention\Image\Facades\Image;
+
+
+/**
+ * Get Settings Value of a specific key.
+ *
+ * @param  string  $key
+ *
+ * @return mixed
+ */
+function get_settings_value_of($key)
+{
+    $settings = Valuestore::make(config_path('settings.json'));
+    return $settings->get($key, 'Not Found');
+}
 
 /**
  * Get either a Gravatar URL or complete image tag for a specified email address.
@@ -140,16 +156,17 @@ function image_remove($file_path)
  * @param string $file_extension
  * @param string $store_path
  * @param string $original_path
+ * @param int $size
  *
  * @return string $file_name
  */
 // public_path("assets\users\\")
-function image_upload($store_name, $file_extension, $file_path, $original_path)
+function image_upload($store_name, $file_extension, $file_path, $original_path, $size=800)
 {
     $file_name = Str::slug($store_name).".{$file_extension}";
     $file_path .= $file_name;
     Image::make($original_path)->resize(
-        800,
+        $size,
         null,
         function ($constraint)
         {
@@ -157,4 +174,67 @@ function image_upload($store_name, $file_extension, $file_path, $original_path)
         }
     )->save($file_path, 100);
     return $file_name;
+}
+
+/**
+ * Get the current sidebar link parent show DB attribute.
+ *
+ * @param string $route_name
+ * @return mixed[integer|string]
+ */
+function get_parent_show_of($route_name)
+{
+    $needle = str_replace(
+        'admin.',
+        '',
+        $route_name
+    );
+    $permission = Permission::whereAs($needle)->first();
+    return ($permission)? $permission->parent_show: $needle;
+}
+
+/**
+ * Get the current sidebar link parent DB attribute.
+ *
+ * @param string $route_name
+ * @return mixed[integer|string]
+ */
+function get_parent_of($route_name)
+{
+    $needle = str_replace(
+        'admin.',
+        '',
+        $route_name
+    );
+    $permission = Permission::whereAs($needle)->first();
+    return ($permission)? $permission->parent: $needle;
+}
+
+/**
+ * Get the current sidebar link parent id DB attribute.
+ *
+ * @param string $route_name
+ * @return mixed[integer|string]
+ */
+function get_parent_id_of($route_name)
+{
+    $needle = str_replace(
+        'admin.',
+        '',
+        $route_name
+    );
+    $permission = Permission::whereAs($needle)->first();
+    return ($permission)? $permission->id: null;
+}
+
+/**
+ * Get the current sidebar link menu id DB attribute.
+ *
+ * @param string $route_name
+ * @return mixed[integer|null]
+ */
+function get_menu_id_of($menu_id)
+{
+    $permission = Permission::whereId($menu_id)->first();
+    return ($permission)? $permission->parent_show: null;
 }

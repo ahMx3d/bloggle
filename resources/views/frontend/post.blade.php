@@ -18,6 +18,7 @@
                                 <div class="carousel-item {{ ($loop->index == 0)? 'active': ''}}">
                                     <img
                                         class="d-block w-100 img-fluid img-thumbnail"
+                                        style="height: 465px"
                                         src="{{ asset("assets/posts/{$medium->file_name}") }}"
                                         alt="{{ Str::limit($post->title, 10, '...') }}" />
                                 </div>

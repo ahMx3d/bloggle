@@ -94,6 +94,17 @@ class Post extends Model
     }
 
     /**
+     * Scope a query to only include pending posts.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopePending($query)
+    {
+        return $query->where('status', 0);
+    }
+
+    /**
      * Scope a query to only include type-post posts.
      *
      * @param  \Illuminate\Database\Eloquent\Builder  $query
@@ -149,6 +160,17 @@ class Post extends Model
     public function comments()
     {
         return $this->hasMany(Comment::class);
+    }
+
+    /**
+     * The Post Comment Relationship
+     * Each post has many comments.
+     *
+     * @return object
+     */
+    public function commentsCount()
+    {
+        return ($this->hasMany(Comment::class)->count())? $this->hasMany(Comment::class)->count(): 'Not Found';
     }
 
     /**

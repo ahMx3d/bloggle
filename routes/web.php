@@ -102,32 +102,32 @@ Route::group(['prefix' => 'admin'], function () {
     // ]);
 
     Route::get('password/reset', [
-        'as'   => 'admin.password.request',
+        'as'   => 'password.request',
         'uses' => 'Backend\Auth\ForgotPasswordController@showLinkRequestForm'
     ]);
     Route::post('password/email', [
-        'as'   => 'admin.password.email',
+        'as'   => 'password.email',
         'uses' => 'Backend\Auth\ForgotPasswordController@sendResetLinkEmail'
     ]);
     Route::get('password/reset/{token}', [
-        'as'   => 'admin.password.reset',
+        'as'   => 'password.reset',
         'uses' => 'Backend\Auth\ResetPasswordController@showResetForm'
     ]);
     Route::post('password/reset', [
-        'as'   => 'admin.password.update',
+        'as'   => 'password.update',
         'uses' => 'Backend\Auth\ResetPasswordController@reset'
     ]);
 
-    Route::get('email/verify', [
-        'as'   => 'admin.verification.notice',
-        'uses' => 'Backend\Auth\VerificationController@show'
-    ]);
-    Route::get('email/verify/{id}/{hash}', [
-        'as'   => 'admin.verification.verify',
-        'uses' => 'Backend\Auth\VerificationController@verify'
-    ]);
-    Route::post('email/resend', [
-        'as'   => 'admin.verification.resend',
-        'uses' => 'Backend\Auth\VerificationController@resend'
-    ]);
+    // Route::get('email/verify', [
+    //     'as'   => 'admin.verification.notice',
+    //     'uses' => 'Backend\Auth\VerificationController@show'
+    // ]);
+    // Route::get('email/verify/{id}/{hash}', [
+    //     'as'   => 'admin.verification.verify',
+    //     'uses' => 'Backend\Auth\VerificationController@verify'
+    // ]);
+    // Route::post('email/resend', [
+    //     'as'   => 'admin.verification.resend',
+    //     'uses' => 'Backend\Auth\VerificationController@resend'
+    // ]);
 });

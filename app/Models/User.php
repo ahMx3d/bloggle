@@ -7,11 +7,13 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Mindscms\Entrust\Traits\EntrustUserWithPermissionsTrait;
+use Nicolaslopezj\Searchable\SearchableTrait;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
     use
         Notifiable,
+        SearchableTrait,
         EntrustUserWithPermissionsTrait;    // Entrust Permissions Package.
 
     /**
@@ -20,6 +22,22 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array
      */
     protected $guarded = [];
+    protected $searchable = [
+        /**
+         * Columns and their priority in search results.
+         * Columns with higher values are more important.
+         * Columns with equal values have equal importance.
+         *
+         * @var array
+         */
+        'columns' => [
+            'users.name'     => 10,
+            'users.username' => 10,
+            'users.email'    => 10,
+            'users.mobile'   => 10,
+            'users.bio'      => 10
+        ]
+    ];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -38,6 +56,14 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * Display the status record for blade views.
+     */
+    public function status()
+    {
+        return ($this->status)? 'Active': 'Pending';
+    }
 
     /**
      * The channels the user receives notification broadcasts on.

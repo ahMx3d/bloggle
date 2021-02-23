@@ -36,7 +36,11 @@ class MediaObserver
      */
     public function deleted(PostMedia $postMedia)
     {
-        image_remove("assets/posts/{$postMedia->file_name}");
+        try {
+            image_remove("assets/posts/{$postMedia->file_name}");
+        } catch (\Exception $e) {
+            throw new \Exception($e);
+        }
     }
 
     /**

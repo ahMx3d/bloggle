@@ -41,7 +41,7 @@ class PostObserver
                 );
                 $post->media()->insert($images);
             }
-            if ($post->status == 'Active') Cache::forget('recent_posts');
+            if ($post->status == 'Active' and !$post->post_type == 'page') Cache::forget('recent_posts');
         } catch (\Exception $err) {
             images_remove($images);
             throw new \Exception($err);

@@ -38,7 +38,9 @@ class UserObserver
      */
     public function deleted(User $user)
     {
-        //
+        if($image = $user->getOriginal('user_image')) image_remove(
+            "assets/users/{$image}"
+        );
     }
 
     /**

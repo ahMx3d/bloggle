@@ -4,13 +4,28 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Cviebrock\EloquentSluggable\Sluggable;
+use Nicolaslopezj\Searchable\SearchableTrait;
 
 class Category extends Model
 {
-    // SEO Friendly Package Trait.
-    use Sluggable;
+    use
+        Sluggable,  // SEO Friendly Package Trait.
+        SearchableTrait;  // Search Box Package Trait.
 
     protected $guarded = [];
+    protected $searchable = [
+        /**
+         * Columns and their priority in search results.
+         * Columns with higher values are more important.
+         * Columns with equal values have equal importance.
+         *
+         * @var array
+         */
+        'columns' => [
+            'categories.name' => 10,
+            'categories.slug' => 10,
+        ]
+    ];
 
     /**
      * The Sluggable Trait Method Implementation.
@@ -21,7 +36,7 @@ class Category extends Model
     {
         return [
             'slug' => [
-                'source' => 'title'
+                'source' => 'name'
             ]
         ];
     }
@@ -60,5 +75,15 @@ class Category extends Model
     public function posts()
     {
         return $this->hasMany(Post::class);
+    }
+
+    /**
+     * The human readable status record.
+     *
+     * @return object
+     */
+    public function status()
+    {
+        return ($this->status)? 'Active': 'Pending';
     }
 }
