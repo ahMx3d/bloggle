@@ -2,10 +2,10 @@
 
 namespace App\Observers;
 
+use App\Models\Tag;
 use App\Models\Post;
-use Illuminate\Support\Facades\Cache;
-use App\Jobs\Frontend\UploadPostMediaJob;
 use App\Services\PostService;
+use Illuminate\Support\Facades\Cache;
 
 class PostObserver
 {
@@ -24,12 +24,18 @@ class PostObserver
     public function created(Post $post)
     {
         try {
+            if(count(request()->tags)){
+                $tags = [];
+                foreach (request()->tags as $tag) {
+                    $tag = Tag::firstOrCreate(
+                        ['id'   => $tag],
+                        ['name' => $tag],
+                    );
+                    $tags[] = $tag->id;
+                }
+                $post->tags()->sync($tags);
+            }
             if (request()->images && count(request()->images) > 0) {
-                // dispatch(new UploadPostMediaJob(
-                //     // request()->images,
-                //     request()->all(),
-                //     $post
-                // ));
                 $images = images_upload(
                     request()->images,
                     $post->slug,
@@ -41,7 +47,10 @@ class PostObserver
                 );
                 $post->media()->insert($images);
             }
-            if ($post->status == 'Active' and !$post->post_type == 'page') Cache::forget('recent_posts');
+            if ($post->status == 'Active' and !$post->post_type == 'page') {
+                Cache::forget('global_tags');
+                Cache::forget('recent_posts');
+            }
         } catch (\Exception $err) {
             images_remove($images);
             throw new \Exception($err);

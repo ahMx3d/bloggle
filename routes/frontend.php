@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 
 
 // Landing Routes
-Route::group(['namespace'=>'Frontend'], function () {
+Route::group(['namespace' => 'Frontend'], function () {
     Route::get('/', [
         'as'   => 'frontend.index',
         'uses' => 'PostsController@index'
@@ -44,6 +44,11 @@ Route::group(['namespace'=>'Frontend'], function () {
     Route::post('posts/{slug}/comments', [
         'as'   => 'frontend.posts.comments.add',
         'uses' => 'CommentsController@store'
+    ]);
+
+    Route::get('tags/{key}', [
+        'as'   => 'frontend.posts.by.tag',
+        'uses' => 'PostsController@show_by_tag'
     ]);
 
     Route::get('categories/{key}', [
@@ -153,4 +158,3 @@ Route::group([
         'uses' => 'UsersController@destroy'
     ]);
 });
-

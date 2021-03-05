@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Frontend\Auth;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -100,6 +101,7 @@ class RegisterController extends Controller
                 $user->update(['user_image'=>$file_name]);
             }
         }
+        $user->attachRole(Role::whereName('user')->first()->id);
         return $user;
     }
 

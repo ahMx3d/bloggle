@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Frontend;
 
+use App\Models\Tag;
+use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -12,6 +14,7 @@ use App\Interfaces\Frontend\Repositories\IPostRepository;
 use App\Interfaces\Frontend\Repositories\IUserRepository;
 use App\Interfaces\Frontend\Repositories\IAuthPostRepository;
 use App\Interfaces\Frontend\Repositories\ICategoryRepository;
+use Illuminate\Support\Facades\Cache;
 
 class PostsController extends Controller
 {
@@ -57,7 +60,8 @@ class PostsController extends Controller
             'show_by_slug',
             'show_by_category',
             'show_by_archive',
-            'show_by_author'
+            'show_by_author',
+            'show_by_tag'
         ]);
     }
 
@@ -117,6 +121,32 @@ class PostsController extends Controller
                 'danger'
             );
         }
+    }
+
+    /**
+     * show posts by tag in frontend index view.
+     *
+     * @param string|int $key
+     * @return Illuminate\Support\Facades\View (frontend.index, compact('posts'))
+     */
+    public function show_by_tag($key)
+    {
+        $tag = Tag::whereSlug($key)->orWhere('id', $key)->first()->id;
+
+        if ($tag) {
+            $posts = Post::with(['media', 'user', 'tags'])
+                ->whereHas('tags', function ($query) use ($key) {
+                    $query->where('slug', $key);
+                })
+                ->typePost()
+                ->active()
+                ->orderBy('id', 'desc')
+                ->paginate(5);
+
+            return view('frontend.index', compact('posts'));
+        }
+
+        return redirect()->route('frontend.index');
     }
 
     /**
@@ -202,13 +232,14 @@ class PostsController extends Controller
     public function create()
     {
         try {
+            $tags = Tag::pluck('name', 'id')->toArray();
             $categories = $this->category_repo->all_categories_pluck();
             return (!$categories)? redirect_with_msg(
                 'frontend.profile',
                 'Oops, Something went wrong',
                 'danger',
                 auth()->user()->username
-            ): view('frontend.user.post.create', compact('categories'));
+            ): view('frontend.user.post.create', compact('categories', 'tags'));
         } catch (\Exception $e) {
             return redirect_with_msg(
                 'frontend.index',
@@ -253,12 +284,13 @@ class PostsController extends Controller
     public function edit($key)
     {
         try {
+            $tags = Tag::pluck('name', 'id')->toArray();
             $post = $this->auth_post_repo->post_get_by_key($key);
             if (!$post) return redirect_to('frontend.index');
 
             $categories = $this->category_repo->all_categories_pluck();
 
-            return view('frontend.user.post.edit', compact('post','categories'));
+            return view('frontend.user.post.edit', compact('post','categories', 'tags'));
         } catch (\Exception $e) {
             return redirect_with_msg(
                 'frontend.index',
@@ -285,7 +317,19 @@ class PostsController extends Controller
 
             DB::beginTransaction();
             $this->auth_post_repo->post_update($request, $post);
+            if(count($request->tags)){
+                $tags = [];
+                foreach ($request->tags as $tag) {
+                    $tag = Tag::firstOrCreate(
+                        ['id'   => $tag],
+                        ['name' => $tag],
+                    );
+                    $tags[] = $tag->id;
+                }
+                $post->tags()->sync($tags);
+            }
             DB::commit();
+            Cache::forget('global_tags');
 
             return redirect_with_msg(
                 'user.posts.edit',

@@ -1,3 +1,17 @@
+@section('style')
+    <style>
+        .global-tags {
+            background    : #ebebeb none repeat scroll 0 0;
+            color         : #333;
+            display       : inline-block;
+            font-size     : 12px;
+            line-height   : 20px;
+            margin        : 5px 5px 0 0;
+            padding       : 5px 15px;
+            text-transform: capitalize;
+        }
+    </style>
+@endsection
 <div class="wn__sidebar">
     <!-- Start Single Widget -->
     <aside class="widget search_widget">
@@ -8,6 +22,20 @@
             {!! Form::button('<i class="fa fa-search"></i>', ['type'=>'submit']) !!}
         </div>
         {!! Form::close() !!}
+    </aside>
+    <!-- End Single Widget -->
+    <!-- Start Single Widget -->
+    <aside class="widget category_widget">
+        <h3 class="widget-title">tags</h3>
+        <ul>
+            @foreach($global_tags as $global_tag)
+                <span class="global-tags">
+                    <a href="{{ route('frontend.posts.by.tag', $global_tag->slug) }}">
+                        {{ $global_tag->name }} ({{ $global_tag->posts_count }})
+                    </a>
+                </span>
+            @endforeach
+        </ul>
     </aside>
     <!-- End Single Widget -->
     <!-- Start Single Widget -->

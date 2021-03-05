@@ -1,8 +1,7 @@
 @extends('layouts.app')
 @section('style')
-    <link
-        rel="stylesheet"
-        href="{{ asset('frontend/summernote/summernote-bs4.min.css') }}" />
+<link rel="stylesheet" href="{{ asset('frontend/summernote/summernote-bs4.min.css') }}" />
+<link rel="stylesheet" href="{{ asset('frontend/js/select2/css/select2.min.css') }}" />
 @endsection
 @section('content')
 <!-- Start Blog Area -->
@@ -25,6 +24,20 @@
                         {!! Form::label('description', 'Description') !!}
                         {!! Form::textarea('description', old('description', $post->description), ['class'=>'form-control summernote']) !!}
                         @error('description')
+                        <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <div class="form-group">
+                        {!! Form::label('tags', 'Tags') !!}
+                        <div class="d-flex justify-content-between align-items-center">
+                        {!! Form::select('tags[]', $tags, old('tags', $post->tags),
+                        ['class'=>'form-control tags mr-3', 'multiple'=>'multiple', 'id'=>'tags']) !!}
+                        {!! Form::button('Bulk',
+                        ['class'=>'btn btn-primary btn-xs','id'=>'tags-btn-bulk','type'=>'button']) !!}
+                        {!! Form::button('Undo',
+                        ['class'=>'btn btn-danger btn-xs','id'=>'tags-btn-undo','type'=>'button']) !!}
+                        </div>
+                        @error('tags')
                         <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
@@ -77,9 +90,25 @@
 <!-- End Blog Area -->
 @endsection
 @section('script')
+    <script src="{{ asset('frontend/js/select2/js/select2.full.min.js') }}"></script>
     <script src="{{ asset('frontend/summernote/summernote-bs4.min.js') }}"></script>
     <script>
         $(function () {
+            $('.tags').select2({
+                minimumResultsForSearch: Infinity,
+                tags                   : true,
+                closeOnSelect          : false
+            });
+
+            $('#tags-btn-bulk').click(function () {
+                $('#tags > option').prop('selected', 'selected');
+                $('#tags').trigger('change');
+            });
+            $('#tags-btn-undo').click(function () {
+                $('#tags > option').prop('selected', '');
+                $('#tags').trigger('change');
+            });
+
             $('.summernote').summernote({
                 tabsize    : 2,
                 height     : 200,

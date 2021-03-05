@@ -38,7 +38,7 @@ Route::group([
         'uses' => 'DashboardsController@index'
     ]);
 
-    Route::group(['as'=>'admin.'], function () {
+    Route::group(['as' => 'admin.'], function () {
         Route::get('/dashboard', [
             'as'   => 'index',
             'uses' => 'DashboardsController@index'
@@ -61,6 +61,7 @@ Route::group([
             'pages'           => 'PagesController',
             'post_comments'   => 'CommentsController',
             'post_categories' => 'CategoriesController',
+            'post_tags'       => 'TagsController',
             'contact_us'      => 'ContactsController',
             'users'           => 'UsersController',
             'supervisors'     => 'SupervisorsController',

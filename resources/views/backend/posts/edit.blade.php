@@ -1,8 +1,7 @@
 @extends('layouts.admin')
 @section('style')
-<link
-    rel="stylesheet"
-    href="{{ asset('backend/vendor/summernote/summernote-bs4.min.css') }}" />
+<link rel="stylesheet" href="{{ asset('backend/vendor/select2/css/select2.min.css') }}" />
+<link rel="stylesheet" href="{{ asset('backend/vendor/summernote/summernote-bs4.min.css') }}" />
 @endsection
 @section('content')
 <div class="card shadow mb-4">
@@ -36,6 +35,24 @@
                     {!! Form::label('description', 'Description') !!}
                     {!! Form::textarea('description', old('description', $post->description), ['class'=>'form-control summernote']) !!}
                     @error('description')
+                    <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-group">
+                    {!! Form::label('tags', 'Tags') !!}
+                    <div class="d-flex justify-content-between align-items-center">
+                    {!! Form::select('tags[]', $tags, old('tags', $post->tags),
+                    ['class'=>'form-control tags mr-3', 'multiple'=>'multiple', 'id'=>'tags']) !!}
+                    {!! Form::button('Bulk',
+                    ['class'=>'btn btn-primary btn-xs','id'=>'tags-btn-bulk','type'=>'button']) !!}
+                    {!! Form::button('Undo',
+                    ['class'=>'btn btn-danger btn-xs','id'=>'tags-btn-undo','type'=>'button']) !!}
+                    </div>
+                    @error('tags')
                     <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
@@ -89,9 +106,25 @@
 </div>
 @endsection
 @section('script')
+    <script src="{{ asset('backend/vendor/select2/js/select2.full.min.js') }}"></script>
     <script src="{{ asset('backend/vendor/summernote/summernote-bs4.min.js') }}"></script>
     <script>
         $(function () {
+            $('.tags').select2({
+                minimumResultsForSearch: Infinity,
+                tags                   : true,
+                closeOnSelect          : false
+            });
+
+            $('#tags-btn-bulk').click(function () {
+                $('#tags > option').prop('selected', 'selected');
+                $('#tags').trigger('change');
+            });
+            $('#tags-btn-undo').click(function () {
+                $('#tags > option').prop('selected', '');
+                $('#tags').trigger('change');
+            });
+
             $('.summernote').summernote({
                 tabsize    : 2,
                 height     : 200,

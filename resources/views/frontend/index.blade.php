@@ -48,6 +48,20 @@
                                     </li>
                                 </ul>
                                 <p>{!! Str::limit($post->description, 145, '...') !!}</p>
+                                @if ($post->tags->count())
+                                    <ul class="post__meta">
+                                        <li>
+                                            <span>Tags: </span>
+                                        </li>
+                                        @foreach ($post->tags as $tag)
+                                            <li>
+                                                <a href="{{ route('frontend.posts.by.tag', $tag->slug) }}">
+                                                    <span class="label label-info">{{ $tag->name }}{{ (!$loop->last)? ',': '' }}</span>
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                @endif
                                 <div class="blog__btn">
                                     <a href="{{ route('frontend.posts.show', $post->slug) }}">read more</a>
                                 </div>

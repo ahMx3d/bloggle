@@ -152,6 +152,16 @@ class Post extends Model
     }
 
     /**
+     * Get the post for the blog tags.
+     *
+     * @return object
+     */
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'posts_tags');
+    }
+
+    /**
      * The Post Comment Relationship
      * Each post has many comments.
      *

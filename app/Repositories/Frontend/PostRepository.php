@@ -27,6 +27,7 @@ class PostRepository implements IPostRepository
     private function posts_query_build()
     {
         return $this->post_model::with([
+            'tags',
             'user' => function ($query){
                 $query->select(
                     'id',
@@ -56,6 +57,7 @@ class PostRepository implements IPostRepository
     private function posts_query_build_by()
     {
         return $this->post_model::with([
+            'tags',
             'user' => function ($query){
                 $query->select(
                     'id',
@@ -146,6 +148,7 @@ class PostRepository implements IPostRepository
     public function post_get_by_slug_with_relations($slug)
     {
         return $this->post_model::with([
+            'tags',
             'user' => function ($query){
                 $query->select(
                     'id',

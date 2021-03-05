@@ -2,12 +2,13 @@
 
 namespace App\Providers;
 
-use App\Interfaces\Frontend\Repositories\ICategoryRepository;
-use App\Interfaces\Frontend\Repositories\ICommentRepository;
-use App\Interfaces\Frontend\Repositories\IPostRepository;
+use App\Models\Tag;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\ServiceProvider;
+use App\Interfaces\Frontend\Repositories\IPostRepository;
+use App\Interfaces\Frontend\Repositories\ICommentRepository;
+use App\Interfaces\Frontend\Repositories\ICategoryRepository;
 
 class FrontendViewServiceProvider extends ServiceProvider
 {
@@ -49,7 +50,7 @@ class FrontendViewServiceProvider extends ServiceProvider
                 $limitation_count = config(
                     'constants.LIMITATION_COUNT'
                 );
-                
+
                 if(!Cache::has('recent_posts')){
                     $recent_posts = $post_repo->all_posts_limit(
                         $limitation_count
@@ -74,6 +75,14 @@ class FrontendViewServiceProvider extends ServiceProvider
                             return $recent_comments;
                         }
                     );
+                }
+
+                if (!Cache::has('global_tags')) {
+                    $global_tags = Tag::withCount('posts')->get();
+
+                    Cache::remember('global_tags', 3600, function () use ($global_tags){
+                        return $global_tags;
+                    });
                 }
 
                 if(!Cache::has('sidebar_categories')){
@@ -101,12 +110,14 @@ class FrontendViewServiceProvider extends ServiceProvider
                 $recent_posts       = Cache::get('recent_posts');
                 $recent_comments    = Cache::get('recent_comments');
                 $sidebar_categories = Cache::get('sidebar_categories');
+                $global_tags        = Cache::get('global_tags');
                 $sidebar_archives   = Cache::get('sidebar_archives');
 
                 $view->with([
                     'recent_posts'       => $recent_posts,
                     'recent_comments'    => $recent_comments,
                     'sidebar_categories' => $sidebar_categories,
+                    'global_tags'        => $global_tags,
                     'sidebar_archives'   => $sidebar_archives,
                 ]);
             });

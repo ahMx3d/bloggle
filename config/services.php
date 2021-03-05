@@ -14,9 +14,15 @@ return [
     |
     */
 
+    'facebook' => [
+        'client_id'     => env('FACEBOOK_CLIENT_ID', '261604592268963'),
+        'client_secret' => env('FACEBOOK_CLIENT_SECRET', '25c4d39affdf3aefee6af877feb03c2b'),
+        'redirect'      => 'https://bloggle.test/auth/facebook/callback',
+    ],
+
     'mailgun' => [
-        'domain' => env('MAILGUN_DOMAIN'),
-        'secret' => env('MAILGUN_SECRET'),
+        'domain'   => env('MAILGUN_DOMAIN'),
+        'secret'   => env('MAILGUN_SECRET'),
         'endpoint' => env('MAILGUN_ENDPOINT', 'api.mailgun.net'),
     ],
 
@@ -25,7 +31,7 @@ return [
     ],
 
     'ses' => [
-        'key' => env('AWS_ACCESS_KEY_ID'),
+        'key'    => env('AWS_ACCESS_KEY_ID'),
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],

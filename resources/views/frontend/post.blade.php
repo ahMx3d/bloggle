@@ -62,9 +62,22 @@
                                 <p>{!! $post->description !!}</p>
                             </div>
                             <ul class="blog_meta">
-                                <li><a href="#">{{ $post->approved_comments->count() }} comment{{ ($post->approved_comments->count()>1 || $post->approved_comments->count()==0)? 's': '' }}</a></li>
-                                <li> / </li>
                                 <li>Category: <span>{{ $post->category->name }}</span></li>
+                                @if ($post->tags->count())
+                                    <li> / </li>
+                                    <li>
+                                        <span>Tags: </span>
+                                    </li>
+                                    @foreach ($post->tags as $tag)
+                                        <li>
+                                            <a
+                                                href="{{ route('frontend.posts.by.tag', $tag->slug) }}"
+                                                class="bg-info p-1">
+                                                <span class="text-white">{{ $tag->name }}{{ (!$loop->last)? ',': '' }}</span>
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                @endif
                             </ul>
                         </div>
                     </article>

@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\Models\Tag;
 use App\Models\Post;
 use App\Models\Category;
 use App\Events\PostUpdated;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Cache;
 use Stevebauman\Purify\Facades\Purify;
 use App\Http\Requests\Frontend\PostRequest;
 
@@ -45,6 +47,7 @@ class PostsController extends Controller
 
         $keyword     = (request()->filled('keyword'))? request()->keyword: null;
         $category_id = (request()->filled('category_id'))? request()->category_id: null;
+        $tag_id      = (request()->filled('tag_id'))? request()->tag_id: null;
         $status      = (request()->filled('status'))? request()->status: null;
         $sort_by     = (request()->filled('sort_by'))? request()->sort_by: 'id';
         $order_by    = (request()->filled('order_by'))? request()->order_by: 'desc';
@@ -58,6 +61,9 @@ class PostsController extends Controller
         $posts = ($keyword)? $posts->search($keyword): $posts;
         $posts = ($status != null)? $posts->whereStatus($status): $posts;
         $posts = ($category_id)? $posts->whereCategoryId($category_id): $posts;
+        $posts = ($tag_id)? $posts->whereHas('tags', function ($query)use($tag_id){
+            $query->whereId($tag_id);
+        }): $posts;
         $posts = $posts->orderBy(
             $sort_by,
             $order_by
@@ -79,8 +85,9 @@ class PostsController extends Controller
             'create_posts'
         )) return redirect_to('admin.index');
 
+        $tags = Tag::pluck('name', 'id')->toArray();
         $categories = Category::orderDesc()->pluck('name','id')->toArray();
-        return view('backend.posts.create', compact('categories'));
+        return view('backend.posts.create', compact('categories', 'tags'));
     }
 
     /**
@@ -158,9 +165,10 @@ class PostsController extends Controller
             'update_posts'
         )) return redirect_to('admin.index');
 
+        $tags = Tag::pluck('name', 'id')->toArray();
         $categories = Category::orderDesc()->pluck('name','id')->toArray();
         $post       = Post::with(['media'])->whereId($id)->typePost()->first();
-        return view('backend.posts.edit', compact('categories', 'post'));
+        return view('backend.posts.edit', compact('categories', 'post', 'tags'));
     }
 
     /**
@@ -195,7 +203,19 @@ class PostsController extends Controller
             ];
             $post->update($data);
             event(new PostUpdated($post));
+            if(count($request->tags)){
+                $tags = [];
+                foreach ($request->tags as $tag) {
+                    $tag = Tag::firstOrCreate(
+                        ['id'   => $tag],
+                        ['name' => $tag],
+                    );
+                    $tags[] = $tag->id;
+                }
+                $post->tags()->sync($tags);
+            }
             DB::commit();
+            Cache::forget('global_tags');
 
             return redirect_with_msg(
                 'admin.posts.index',

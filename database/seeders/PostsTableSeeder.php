@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Seeders;
+
 use Faker\Factory;
 use App\Models\Post;
 use App\Models\User;

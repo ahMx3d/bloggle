@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -16,7 +18,9 @@ class DatabaseSeeder extends Seeder
             RolesTableSeeder::class,
             PermissionsTableSeeder::class,
             CategoriesTableSeeder::class,
+            TagsTableSeeder::class,
             PostsTableSeeder::class,
+            PostsTagsTableSeeder::class,
             PagesTableSeeder::class,
             CommentsTableSeeder::class,
             SettingsTableSeeder::class,
